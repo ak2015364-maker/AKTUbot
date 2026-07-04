@@ -1,28 +1,43 @@
 import chromadb
 from sentence_transformers import SentenceTransformer
+from pathlib import Path
 
-# Load embedding model
+# -----------------------------
+# Embedding Model
+# -----------------------------
 embedding_model = SentenceTransformer(
     "all-MiniLM-L6-v2"
 )
 
-# ChromaDB Client
+# -----------------------------
+# ChromaDB Path
+# -----------------------------
+BASE_DIR = Path(__file__).resolve().parent.parent
+
+CHROMA_PATH = BASE_DIR / "chroma_db"
+
+CHROMA_PATH.mkdir(exist_ok=True)
+
+# -----------------------------
+# Chroma Client
+# -----------------------------
 client = chromadb.PersistentClient(
-    path="./chroma_db"
+    path=str(CHROMA_PATH)
 )
 
+# -----------------------------
 # Collection
+# -----------------------------
 collection = client.get_or_create_collection(
     name="aktu_notes"
 )
 
-
+# -----------------------------
 # Add Document
+# -----------------------------
 def add_document(doc_id, text, metadata):
 
-    embedding = embedding_model.encode(
-        text
-    ).tolist()
+    embedding = embedding_model.encode(text).tolist()
 
     collection.add(
         ids=[doc_id],
@@ -31,13 +46,12 @@ def add_document(doc_id, text, metadata):
         metadatas=[metadata]
     )
 
-
+# -----------------------------
 # Search Documents
+# -----------------------------
 def search_document(query, subject):
 
-    query_embedding = embedding_model.encode(
-        query
-    ).tolist()
+    query_embedding = embedding_model.encode(query).tolist()
 
     results = collection.query(
         query_embeddings=[query_embedding],
@@ -49,48 +63,36 @@ def search_document(query, subject):
 
     return results
 
-
+# -----------------------------
 # Context Only
+# -----------------------------
 def get_context(query, subject):
 
     try:
 
-        results = search_document(
-            query,
-            subject
-        )
+        results = search_document(query, subject)
 
         documents = results["documents"][0]
 
         if not documents:
             return "No relevant documents found."
 
-        context = "\n\n".join(documents)
-
-        return context
+        return "\n\n".join(documents)
 
     except Exception as e:
 
-        print(
-            "GET_CONTEXT ERROR:",
-            str(e)
-        )
+        print("GET_CONTEXT ERROR:", e)
 
         return "No relevant context found."
 
-
+# -----------------------------
 # Context + Sources
-def get_context_and_sources(
-    query,
-    subject
-):
+# -----------------------------
+def get_context_and_sources(query, subject):
 
     try:
 
-        results = search_document(
-            query,
-            subject
-        )
+        results = search_document(query, subject)
 
         documents = results["documents"][0]
         metadatas = results["metadatas"][0]
@@ -115,24 +117,23 @@ def get_context_and_sources(
 
     except Exception as e:
 
-        print(
-            "GET_CONTEXT_AND_SOURCES ERROR:",
-            str(e)
-        )
+        print("GET_CONTEXT_AND_SOURCES ERROR:", e)
 
         return (
             "No relevant context found.",
             []
         )
 
-
+# -----------------------------
 # Count Documents
+# -----------------------------
 def count_documents():
 
     return collection.count()
 
-
+# -----------------------------
 # Debug Helper
+# -----------------------------
 def peek_documents(limit=5):
 
     results = collection.get(
@@ -144,6 +145,5 @@ def peek_documents(limit=5):
 
     return {
         "total_docs": len(results["ids"]),
-        "sample_metadata":
-            results["metadatas"][:limit]
+        "sample_metadata": results["metadatas"][:limit]
     }
