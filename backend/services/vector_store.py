@@ -1,13 +1,21 @@
-import chromadb
-from sentence_transformers import SentenceTransformer
-from pathlib import Path
+print("STEP A")
 
-# -----------------------------
-# Embedding Model
-# -----------------------------
+import chromadb
+print("STEP B")
+
+from sentence_transformers import SentenceTransformer
+print("STEP C")
+
+from pathlib import Path
+print("STEP D")
+
+print("Loading embedding model...")
+
 embedding_model = SentenceTransformer(
     "all-MiniLM-L6-v2"
 )
+
+print("Embedding model loaded")
 
 # -----------------------------
 # ChromaDB Path
