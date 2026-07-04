@@ -28,31 +28,6 @@ from ingest_all_pdfs import ingest_all_pdfs
 import uuid
 
 app = FastAPI()
-# -----------------------------
-# Auto Build ChromaDB
-# -----------------------------
-try:
-
-    total_docs = count_documents()
-
-    print(f"Current ChromaDB Documents: {total_docs}")
-
-    if total_docs == 0:
-
-        print("ChromaDB is empty.")
-        print("Starting PDF ingestion...")
-
-        ingest_all_pdfs()
-
-        print("ChromaDB successfully created.")
-
-    else:
-
-        print("Existing ChromaDB found.")
-
-except Exception as e:
-
-    print(f"Startup Error: {e}")
 
 UPLOAD_DIR = Path(__file__).resolve().parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
