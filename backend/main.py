@@ -29,9 +29,9 @@ import uuid
 
 app = FastAPI()
 
-# -----------------------------
-# Auto Build ChromaDB
-# -----------------------------
+print(">>>>>>>>>> THIS IS MY MAIN.PY <<<<<<<<<<")
+raise Exception("MAIN.PY IS EXECUTING")
+
 try:
 
     total_docs = count_documents()
