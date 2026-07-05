@@ -29,31 +29,32 @@ import uuid
 
 app = FastAPI()
 
-print(">>>>>>>>>> THIS IS MY MAIN.PY <<<<<<<<<<")
-raise Exception("MAIN.PY IS EXECUTING")
+print("STEP 1")
 
 try:
 
+    print("STEP 2")
+
     total_docs = count_documents()
 
-    print(f"Current ChromaDB Documents: {total_docs}")
+    print(f"STEP 3 - Chroma Count: {total_docs}")
 
     if total_docs == 0:
 
-        print("ChromaDB is empty.")
-        print("Starting PDF ingestion...")
+        print("STEP 4 - Starting ingestion")
 
         ingest_all_pdfs()
 
-        print("ChromaDB successfully created.")
+        print("STEP 5 - Ingestion completed")
 
     else:
 
-        print("Existing ChromaDB found.")
+        print("STEP 6 - Existing DB found")
 
 except Exception as e:
 
-    print(f"Startup Error: {e}")
+    print("STARTUP ERROR:")
+    print(e)
 
 UPLOAD_DIR = Path(__file__).resolve().parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)

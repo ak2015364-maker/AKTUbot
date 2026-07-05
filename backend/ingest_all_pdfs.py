@@ -8,13 +8,17 @@ from utils.text_splitter import split_text
 
 def ingest_all_pdfs():
 
+    print("\n========== INGEST FUNCTION STARTED ==========")
+
     # Path to backend folder
     BASE_DIR = Path(__file__).resolve().parent
 
     # Path to AKTU_data folder
     BASE_FOLDER = BASE_DIR / "AKTU_data"
 
-    print(f"\nSearching PDFs in: {BASE_FOLDER}")
+    print(f"BASE_DIR      : {BASE_DIR}")
+    print(f"BASE_FOLDER   : {BASE_FOLDER}")
+    print(f"Folder Exists : {BASE_FOLDER.exists()}")
 
     if not BASE_FOLDER.exists():
         raise FileNotFoundError(
@@ -26,15 +30,21 @@ def ingest_all_pdfs():
 
     for semester in BASE_FOLDER.iterdir():
 
+        print(f"\nSemester Found : {semester.name}")
+
         if not semester.is_dir():
             continue
 
         for subject in semester.iterdir():
 
+            print(f"Subject Found  : {subject.name}")
+
             if not subject.is_dir():
                 continue
 
             for doc_type in subject.iterdir():
+
+                print(f"Document Type  : {doc_type.name}")
 
                 if not doc_type.is_dir():
                     continue
@@ -44,7 +54,8 @@ def ingest_all_pdfs():
                     if pdf_file.suffix.lower() != ".pdf":
                         continue
 
-                    print(f"\nProcessing: {pdf_file.name}")
+                    print(f"\nPDF Found      : {pdf_file}")
+                    print(f"Processing     : {pdf_file.name}")
 
                     try:
 
@@ -55,6 +66,8 @@ def ingest_all_pdfs():
                             continue
 
                         chunks = split_text(text)
+
+                        print(f"Chunks Created : {len(chunks)}")
 
                         for chunk in chunks:
 
