@@ -22,39 +22,12 @@ from services.vector_store import (
 
 from utils.pdf_utils import extract_text_from_pdf
 from utils.text_splitter import split_text
-from ingest_all_pdfs import ingest_all_pdfs
 
 
 import uuid
 
 app = FastAPI()
 
-print("STEP 1")
-
-try:
-
-    print("STEP 2")
-
-    total_docs = count_documents()
-
-    print(f"STEP 3 - Chroma Count: {total_docs}")
-
-    if total_docs == 0:
-
-        print("STEP 4 - Starting ingestion")
-
-        ingest_all_pdfs()
-
-        print("STEP 5 - Ingestion completed")
-
-    else:
-
-        print("STEP 6 - Existing DB found")
-
-except Exception as e:
-
-    print("STARTUP ERROR:")
-    print(e)
 
 UPLOAD_DIR = Path(__file__).resolve().parent / "uploads"
 UPLOAD_DIR.mkdir(exist_ok=True)
