@@ -27,7 +27,7 @@ function Signup() {
     setLoading(true);
     setError("");
     try {
-      await axios.post("http://127.0.0.1:8000/signup", {
+      await axios.post("https://aktubot-production.up.railway.app/signup", {
         username,
         email,
         password,

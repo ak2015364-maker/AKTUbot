@@ -22,7 +22,7 @@ function Login() {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.post("http://127.0.0.1:8000/login", {
+      const response = await axios.post("https://aktubot-production.up.railway.app/login", {
         email,
         password,
       });

@@ -24,7 +24,7 @@ function App() {
   const [selectedSubject, setSelectedSubject] = useState("DBMS");
 
   const getSourceDownloadUrl = (source) =>
-    `http://127.0.0.1:8000/download-pdf/${encodeURIComponent(source)}`;
+    `https://aktubot-production.up.railway.app/download-pdf/${encodeURIComponent(source)}`;
 
   const askQuestion = async () => {
     if (!question.trim()) return;
@@ -32,7 +32,7 @@ function App() {
     setLoading(true);
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/ask-rag", {
+      const response = await axios.post("https://aktubot-production.up.railway.app/ask-rag", {
         subject: selectedSubject,
         question: question,
         user_id: user?.id,
@@ -59,7 +59,7 @@ function App() {
   const fetchHistory = async () => {
     if (!user) return;
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/history/${user.id}`);
+      const res = await axios.get(`https://aktubot-production.up.railway.app/history/${user.id}`);
       setHistory(res.data || []);
     } catch (err) {
       console.error(err);
