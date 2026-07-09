@@ -7,9 +7,6 @@ __pycache__/
 backend/.env
 frontend/.env
 
-# ChromaDB
-backend/chroma_db/
-
 # Uploads
 backend/uploads/
 

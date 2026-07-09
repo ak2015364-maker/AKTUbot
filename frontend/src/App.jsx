@@ -23,9 +23,6 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState("DBMS");
 
-  const getSourceDownloadUrl = (source) =>
-    `https://aktubot-production.up.railway.app/download-pdf/${encodeURIComponent(source)}`;
-
   const askQuestion = async () => {
     if (!question.trim()) return;
 
@@ -239,17 +236,7 @@ function App() {
 
             {sources.map((source, index) => (
               <div key={index} className="source-item">
-                <a
-                  href={getSourceDownloadUrl(source)}
-                  className="source-chip"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  download={source}
-                  aria-label={`Download PDF ${source}`}
-                >
-                  {source}
-                </a> 
-                <span className="source-hint">click to access PDF</span>
+                <span className="source-chip">{source}</span>
               </div>
             ))}
 
