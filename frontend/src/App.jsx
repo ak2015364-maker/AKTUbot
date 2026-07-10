@@ -97,7 +97,12 @@ function App() {
 
   const logout = () => {
     localStorage.removeItem("user");
-    window.location.reload();
+    setShowSidebar(false);
+    setQuestion("");
+    setAnswer("");
+    setSources([]);
+    setHistory([]);
+    window.location.href = window.location.pathname;
   };
 
   if (!user) {
