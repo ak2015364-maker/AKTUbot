@@ -6,8 +6,31 @@ import "./App.css";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
+const getStoredUser = () => {
+  try {
+    const rawUser = localStorage.getItem("user");
+
+    if (!rawUser || rawUser === "undefined") {
+      localStorage.removeItem("user");
+      return null;
+    }
+
+    const parsedUser = JSON.parse(rawUser);
+
+    if (!parsedUser || typeof parsedUser !== "object" || !parsedUser.email) {
+      localStorage.removeItem("user");
+      return null;
+    }
+
+    return parsedUser;
+  } catch {
+    localStorage.removeItem("user");
+    return null;
+  }
+};
+
 function App() {
-  const user = JSON.parse(localStorage.getItem("user"));
+  const user = getStoredUser();
 
   const [showSignup, setShowSignup] = useState(false);
 

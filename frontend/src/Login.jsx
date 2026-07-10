@@ -27,6 +27,12 @@ function Login() {
         password,
       });
 
+      if (!response.data?.user) {
+        setError("Login failed. Please check credentials.");
+        setSuccess("");
+        return;
+      }
+
       localStorage.setItem("user", JSON.stringify(response.data.user));
       setSuccess("Login successful — redirecting...");
       setTimeout(() => window.location.reload(), 700);
