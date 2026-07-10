@@ -1,7 +1,7 @@
 from database import SessionLocal, engine, Base
 from models import User, SearchHistory
 from auth import hash_password, verify_password
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -96,7 +96,7 @@ def signup(data: SignupRequest):
     }
 
 
-@app.post("/login")
+@app.post("/login", status_code=status.HTTP_200_OK)
 def login(data: LoginRequest):
 
     db = SessionLocal()
@@ -107,20 +107,20 @@ def login(data: LoginRequest):
 
     if not user:
         db.close()
-
-        return {
-            "message": "Invalid email"
-        }
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="No user exists for this email."
+        )
 
     if not verify_password(
         data.password,
         user.password
     ):
         db.close()
-
-        return {
-            "message": "Invalid password"
-        }
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Email and password do not match."
+        )
 
     db.close()
 

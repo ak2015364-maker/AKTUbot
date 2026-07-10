@@ -31,7 +31,9 @@ function Login() {
       setSuccess("Login successful — redirecting...");
       setTimeout(() => window.location.reload(), 700);
     } catch (err) {
-      setError(err?.response?.data?.message || "Login failed. Please check credentials.");
+      const message = err?.response?.data?.detail || err?.response?.data?.message || "Login failed. Please check credentials.";
+      setError(message);
+      setSuccess("");
     } finally {
       setLoading(false);
     }
