@@ -58,7 +58,7 @@ def search_document(query, subject):
 
     results = collection.query(
         query_embeddings=[query_embedding],
-        n_results=15,
+        n_results=10,
         where={
             "subject": subject
         }
