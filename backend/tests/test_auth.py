@@ -54,3 +54,22 @@ def test_login_returns_200_for_valid_credentials():
         response = client.post("/login", json={"email": "demo@example.com", "password": "secret123"})
         assert response.status_code == 200
         assert response.json()["message"] == "Login successful"
+
+
+def test_update_username_success():
+    with TestClient(app) as client:
+        response = client.put("/users/1/username", json={"username": "updated_demo"})
+        assert response.status_code == 200
+        assert response.json()["user"]["username"] == "updated_demo"
+
+
+def test_update_username_rejects_duplicate_username():
+    with TestClient(app) as client:
+        db = SessionLocal()
+        db.add(User(username="taken_name", email="taken@example.com", password=hash_password("secret123")))
+        db.commit()
+        db.close()
+
+        response = client.put("/users/1/username", json={"username": "taken_name"})
+        assert response.status_code == 400
+        assert response.json()["detail"] == "Username already taken"

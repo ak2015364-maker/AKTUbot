@@ -1,6 +1,6 @@
 import Login from "./Login";
 import Signup from "./Signup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import "./App.css";
 import ReactMarkdown from "react-markdown";
@@ -30,7 +30,7 @@ const getStoredUser = () => {
 };
 
 function App() {
-  const user = getStoredUser();
+  const [user, setUser] = useState(getStoredUser());
 
   const [showSignup, setShowSignup] = useState(false);
 
@@ -39,6 +39,10 @@ function App() {
     localStorage.getItem("theme") === "dark"
   );
   const [history, setHistory] = useState([]);
+  const [usernameDraft, setUsernameDraft] = useState(user?.username || "");
+  const [usernameLoading, setUsernameLoading] = useState(false);
+  const [usernameError, setUsernameError] = useState("");
+  const [usernameMessage, setUsernameMessage] = useState("");
 
   const [question, setQuestion] = useState("");
   const [answer, setAnswer] = useState("");
@@ -68,12 +72,54 @@ function App() {
     setLoading(false);
   };
 
+  useEffect(() => {
+    setUsernameDraft(user?.username || "");
+  }, [user?.id, user?.username]);
+
   const toggleTheme = () => {
     const next = !darkMode;
     setDarkMode(next);
     localStorage.setItem("theme", next ? "dark" : "light");
     if (next) document.body.classList.add("dark");
     else document.body.classList.remove("dark");
+  };
+
+  const updateUsername = async (e) => {
+    e.preventDefault();
+
+    if (!user?.id) return;
+
+    const nextUsername = usernameDraft.trim();
+
+    if (!nextUsername) {
+      setUsernameError("Username cannot be empty.");
+      setUsernameMessage("");
+      return;
+    }
+
+    setUsernameLoading(true);
+    setUsernameError("");
+    setUsernameMessage("");
+
+    try {
+      const response = await axios.put(`https://aktubot-production.up.railway.app/users/${user.id}/username`, {
+        username: nextUsername,
+      });
+
+      const updatedUser = {
+        ...user,
+        username: response.data?.user?.username || nextUsername,
+      };
+
+      localStorage.setItem("user", JSON.stringify(updatedUser));
+      setUser(updatedUser);
+      setUsernameMessage("Username updated successfully.");
+    } catch (err) {
+      const message = err?.response?.data?.detail || "Unable to update username.";
+      setUsernameError(message);
+    } finally {
+      setUsernameLoading(false);
+    }
   };
 
   const fetchHistory = async () => {
@@ -97,11 +143,15 @@ function App() {
 
   const logout = () => {
     localStorage.removeItem("user");
+    setUser(null);
     setShowSidebar(false);
     setQuestion("");
     setAnswer("");
     setSources([]);
     setHistory([]);
+    setUsernameDraft("");
+    setUsernameError("");
+    setUsernameMessage("");
     window.location.href = window.location.pathname;
   };
 
@@ -173,6 +223,23 @@ function App() {
               {' '}Dark mode
             </label>
           </div>
+        </div>
+
+        <div className="sidebar-section">
+          <div className="small-muted">Change username</div>
+          <form className="username-update-form" onSubmit={updateUsername}>
+            <input
+              className="username-update-input"
+              value={usernameDraft}
+              onChange={(e) => setUsernameDraft(e.target.value)}
+              placeholder="New username"
+            />
+            <button className="username-update-button" type="submit" disabled={usernameLoading}>
+              {usernameLoading ? "Saving..." : "Save"}
+            </button>
+          </form>
+          {usernameError && <div className="error-text">{usernameError}</div>}
+          {usernameMessage && <div className="success-text">{usernameMessage}</div>}
         </div>
 
         <div className="sidebar-section" onMouseEnter={fetchHistory}>

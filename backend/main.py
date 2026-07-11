@@ -53,6 +53,10 @@ class LoginRequest(BaseModel):
     password: str
 
 
+class UsernameUpdateRequest(BaseModel):
+    username: str
+
+
 class QuestionRequest(BaseModel):
     subject: str
     question: str
@@ -126,6 +130,55 @@ def login(data: LoginRequest):
 
     return {
         "message": "Login successful",
+        "user": {
+            "id": user.id,
+            "username": user.username,
+            "email": user.email
+        }
+    }
+
+
+@app.put("/users/{user_id}/username", status_code=status.HTTP_200_OK)
+def update_username(user_id: int, data: UsernameUpdateRequest):
+    new_username = data.username.strip()
+
+    if not new_username:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username cannot be empty"
+        )
+
+    db = SessionLocal()
+
+    user = db.query(User).filter(User.id == user_id).first()
+
+    if not user:
+        db.close()
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User not found"
+        )
+
+    duplicate_user = (
+        db.query(User)
+        .filter(User.username == new_username, User.id != user_id)
+        .first()
+    )
+
+    if duplicate_user:
+        db.close()
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Username already taken"
+        )
+
+    user.username = new_username
+    db.commit()
+    db.refresh(user)
+    db.close()
+
+    return {
+        "message": "Username updated successfully",
         "user": {
             "id": user.id,
             "username": user.username,
